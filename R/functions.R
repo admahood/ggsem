@@ -1,9 +1,48 @@
 #' Create path model plot
 #'
+#'
+#' @param fit The lavaan::sem - created object
+#' @param title Character string with the plot title
+#' @param layout_df optional data frame with the x and y coordinates for each variable in the plot
+#' @param rename_nodes will you be supplying a look up table to rename the nodes
+#' @param new_node_names Named vector to rename the variables
+#' @param cols vector of colors for the arrows
+#' @param layout select from a variety of layout algorithms. can be "auto",
+#' "igraph", "manual", "dendrogram", "linear", "matrix", "treemap", "circlepack",
+#' "partition", or "hive". see ?ggraph::create_layout() for more details.
+#' @param alpha threshold for significance. Defaults to 0.05
+#' @param exclude variables to exclude from the plot
 #' @export
-ggsem1 <- function(fit, filename, title="Path Model",layout_df = NA, rename_nodes =F,
-                   cols =  c("#E41A1C", "#377EB8", "grey80"), new_node_names = NA,
-                   layout = "auto", alpha = 0.05, exclude = "none", h2bmask = FALSE) {
+#'
+#' @examples
+#'
+#' # library(tidyverse)
+#' # library(lavaan)
+#' # library(gglavaan)
+#' # library(ggraph)
+#'
+#' #fake_data <- data.frame(x = runif(100, -10, 10)) %>%
+#' #   mutate(noise1 = rnorm(100),
+#' #         y = 2*x + noise1,
+#' #          noise2= rnorm(100),
+#' #          z = x + y + noise2)
+#'
+#' #mod <- 'y ~ x
+#' #         z ~ x + y'
+#'
+#' #fit <- sem(mod, data = fake_data)
+#'
+#' #ggsem1(fit = fit)
+
+ggsem <- function(fit, filename,
+                  title="Path Model",
+                  layout_df = NA,
+                  rename_nodes =F,
+                  cols =  c("#E41A1C", "#377EB8", "grey80"),
+                  new_node_names = NA,
+                  layout = "auto",
+                  alpha = 0.05,
+                  exclude = "none") {
   requireNamespace("tidygraph")
   requireNamespace("cowplot")
   requireNamespace("ggraph")
@@ -13,13 +52,13 @@ ggsem1 <- function(fit, filename, title="Path Model",layout_df = NA, rename_node
   requireNamespace("ggtext")
   # Extract standardized parameters
   params <- lavaan::standardizedSolution(fit) %>%
-    filter(lhs != "exclude",
-           rhs != "exclude")
+    dplyr::filter(!lhs %in% "exclude",
+                  !rhs %in% "exclude")
   # Edge properties
 
   param_edges <- params %>%
-    filter(op %in% c("=~", "~", "~~"), lhs != rhs) %>% #, pvalue < .10) %>%
-    transmute(to = lhs,
+    dplyr::filter(op %in% c("=~", "~", "~~"), lhs != rhs) %>% #, pvalue < .10) %>%
+    dplyr::transmute(to = lhs,
               from = rhs,
               pvalue=pvalue,
               # sig=sig,
@@ -37,12 +76,12 @@ ggsem1 <- function(fit, filename, title="Path Model",layout_df = NA, rename_node
     dplyr::mutate(sign = replace(sign, is.na(val), "ns")) %>%
     dplyr::mutate(hlab = round(val,2)) %>%
     dplyr::mutate(hlab = ifelse(hlab ==0, "", hlab)) %>%
-    replace_na(list(hlab = ""))
+    tidyr::replace_na(list(hlab = ""))
 
   # Node properties
   param_nodes <- params %>%
-    filter(lhs == rhs) %>%
-    transmute(metric = lhs, e = est.std)
+    dplyr::filter(lhs == rhs) %>%
+    dplyr::transmute(metric = lhs, e = est.std)
 
   # Complete Graph Object
   param_graph1 <- tidygraph::tbl_graph(param_nodes,
@@ -53,23 +92,23 @@ ggsem1 <- function(fit, filename, title="Path Model",layout_df = NA, rename_node
     lut_x <- layout_df$x; names(lut_x) <- layout_df$metric
     lut_y <- layout_df$y; names(lut_y) <- layout_df$metric
 
-    layout_man <- create_layout(param_graph1, layout = "linear") %>%
+    layout_man <- ggraph::create_layout(param_graph1, layout = "linear") %>%
       dplyr::mutate(x = lut_x[metric],
                     y=lut_y[metric]) %>%
       dplyr::select(x,y) %>%
       as.data.frame()
 
     # applying the manual layout to the graph objects, one for each group
-    layout1 <- create_layout(param_graph1, layout = layout_man)
+    layout1 <- ggraph::create_layout(param_graph1, layout = layout_man)
   }else{
-    layout1 <- create_layout(param_graph1, layout=layout)
+    layout1 <- ggraph::create_layout(param_graph1, layout=layout)
   }
 
   p1_title <- title[1]
 
   if(rename_nodes){
     new_node_names_df <- data.frame(x = layout1$metric) %>%
-      mutate(new_names = new_node_names[x])
+      dplyr::mutate(new_names = new_node_names[x])
   }
 
   # Plot
@@ -82,15 +121,12 @@ ggsem1 <- function(fit, filename, title="Path Model",layout_df = NA, rename_node
     strength = 0.1,
     angle_calc = "along",
     vjust = -.75,
-    # family = 'Times',
-    # fontface = "bold",
     check_overlap = FALSE,
     arrow = arrow(25, length = unit(0.3, "inches"), type = "open"),
     label_colour = "grey20",
     end_cap = circle(0.5, "inches"),
     start_cap = circle(0.5, "inches")
     )+
-
     scale_edge_color_manual(name = "Direction",
                             values = cols)+
     scale_edge_width(guide = "none", range = c(.5,2)) +
@@ -98,7 +134,6 @@ ggsem1 <- function(fit, filename, title="Path Model",layout_df = NA, rename_node
                 base_family = 'Arial'#,base_family = 'Times'
     ) +
     scale_x_continuous(expand = c(0.095, 0.095))+
-    # scale_y_continuous(expand=c(0.01, 0.01))+
     theme(#plot.title = element_text(size = 30),
       legend.position = "none",
       plot.background = element_rect(color="black", fill="transparent")
