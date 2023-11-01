@@ -31,8 +31,31 @@
 #' #         z ~ x + y'
 #'
 #' #fit <- sem(mod, data = fake_data)
+#' #ggsem(fit)
 #'
-#' #ggsem1(fit = fit)
+#' ## The industrialization and Political Democracy Example
+#' ## Bollen (1989), page 332
+#' # model <- '
+#' # # latent variable definitions
+#' #    ind60 =~ x1 + x2 + x3
+#' #    dem60 =~ y1 + a*y2 + b*y3 + c*y4
+#' #    dem65 =~ y5 + a*y6 + b*y7 + c*y8
+#' #
+#' # # regressions
+#' #   dem60 ~ ind60
+#' #   dem65 ~ ind60 + dem60
+#' #
+#' # # residual correlations
+#' #   y1 ~~ y5
+#' #  y2 ~~ y4 + y6
+#' #   y3 ~~ y7
+#' #   y4 ~~ y8
+#' #   y6 ~~ y8
+#' #'
+#'
+#' #fit <- sem(model, data = PoliticalDemocracy)
+#' #summary(fit, fit.measures = TRUE)
+#' #ggsem(fit)
 
 ggsem <- function(fit, filename,
                   title="Path Model",
@@ -48,7 +71,6 @@ ggsem <- function(fit, filename,
   requireNamespace("ggraph")
   requireNamespace("lavaan")
   requireNamespace("ggpubr")
-  requireNamespace("classInt")
   requireNamespace("ggtext")
   # Extract standardized parameters
   params <- lavaan::standardizedSolution(fit) %>%
@@ -148,24 +170,15 @@ ggsem <- function(fit, filename,
   return(p1)
 }
 
-#' Get Nodes
-#'
-#' Helper function for random_layout
-#'
-#' @export
-get_nodes <- function(fit){
-  lavaan::standardizedsolution(fit) %>%
-    filter(lhs == rhs) %>%
-    transmute(metric = lhs, e = est.std)
-}
-
 #' Create a random layout
 #'
 #' This is the first step to creating a manual layout. Change the x and y values
 #' as appropriate (using dplyr::mutate(), for example) to make things look just
 #' right.
 random_layout <- function(fit){
-  get_nodes(fit) %>%
+  lavaan::standardizedsolution(fit) %>%
+    filter(lhs == rhs) %>%
+    transmute(metric = lhs, e = est.std) %>%
     dplyr::mutate(x=runif(nrow(.), min=-1, max=1),
                   y=runif(nrow(.), min=-1, max=1)) %>%
     dplyr::select(-e) %>%
