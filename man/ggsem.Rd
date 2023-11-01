@@ -60,6 +60,7 @@ Create path model plot
 #fit <- sem(mod, data = fake_data)
 #ggsem(fit)
 
+# example from `lavaan`
 ## The industrialization and Political Democracy Example
 ## Bollen (1989), page 332
 # model <- '
