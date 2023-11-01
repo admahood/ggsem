@@ -7,3 +7,6 @@ Dependencies:
  - tidygraph
  - lavaan
  - tidyverse
+ - cowplot
+ - ggpubr
+ - ggtext
