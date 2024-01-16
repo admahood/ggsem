@@ -7,7 +7,7 @@
 ggsem(
   fit,
   filename,
-  title = "Path Model",
+  title = class(fit)[1],
   layout_df = NA,
   rename_nodes = F,
   cols = c("#E41A1C", "#377EB8", "grey80"),
@@ -19,6 +19,8 @@ ggsem(
 }
 \arguments{
 \item{fit}{The lavaan::sem - created object}
+
+\item{filename}{filename to write the figure to}
 
 \item{title}{Character string with the plot title}
 
@@ -39,49 +41,60 @@ ggsem(
 \item{exclude}{variables to exclude from the plot}
 }
 \description{
-Create path model plot
+This function creates a plot from a structural equation model created by either
+the lavaan::sem or piecewiseSEM::psem functions
 }
 \examples{
 
-# library(tidyverse)
-# library(lavaan)
-# library(gglavaan)
-# library(ggraph)
 
-#fake_data <- data.frame(x = runif(100, -10, 10)) \%>\%
-#   mutate(noise1 = rnorm(100),
-#         y = 2*x + noise1,
-#          noise2= rnorm(100),
-#          z = x + y + noise2)
+fake_data <- data.frame(x =stats::runif(100, -10, 10)) |>
+   dplyr::mutate(noise1 = rnorm(100),
+         y = 2*x + noise1,
+          noise2= rnorm(100),
+          z = x + y + noise2)
 
-#mod <- 'y ~ x
-#         z ~ x + y'
+mod <- 'y ~ x
+         z ~ x + y'
 
-#fit <- sem(mod, data = fake_data)
-#ggsem(fit)
+fit <- lavaan::sem(mod, data = fake_data)
+ggsem(fit)
 
 # example from `lavaan`
 ## The industrialization and Political Democracy Example
 ## Bollen (1989), page 332
-# model <- '
-# # latent variable definitions
-#    ind60 =~ x1 + x2 + x3
-#    dem60 =~ y1 + a*y2 + b*y3 + c*y4
-#    dem65 =~ y5 + a*y6 + b*y7 + c*y8
-#
-# # regressions
-#   dem60 ~ ind60
-#   dem65 ~ ind60 + dem60
-#
-# # residual correlations
-#   y1 ~~ y5
-#  y2 ~~ y4 + y6
-#   y3 ~~ y7
-#   y4 ~~ y8
-#   y6 ~~ y8
-#'
+library(lavaan)
+model <- '
+ # latent variable definitions
+    ind60 =~ x1 + x2 + x3
+    dem60 =~ y1 + a*y2 + b*y3 + c*y4
+    dem65 =~ y5 + a*y6 + b*y7 + c*y8
 
-#fit <- sem(model, data = PoliticalDemocracy)
-#summary(fit, fit.measures = TRUE)
-#ggsem(fit)
+ # regressions
+   dem60 ~ ind60
+   dem65 ~ ind60 + dem60
+
+ # residual correlations
+   y1 ~~ y5
+  y2 ~~ y4 + y6
+   y3 ~~ y7
+   y4 ~~ y8
+   y6 ~~ y8
+'
+
+fit <- lavaan::sem(model, data = PoliticalDemocracy)
+summary(fit, fit.measures = TRUE)
+ggsem(fit)
+
+# example from piecewiseSEM
+library(piecewiseSEM)
+mod <- psem(
+lm(rich ~ cover, data = keeley),
+lm(cover ~ firesev, data = keeley),
+lm(firesev ~ age, data = keeley),
+data = keeley
+)
+
+summary(mod)
+plot(mod)
+ggsem(mod)
 }

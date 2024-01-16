@@ -6,6 +6,12 @@
 \usage{
 random_layout(fit)
 }
+\arguments{
+\item{fit}{output of lavaan::sem()}
+}
+\value{
+a data frame with columns x and y for positions on the plot, and metric for the name of the variable
+}
 \description{
 This is the first step to creating a manual layout. Change the x and y values
 as appropriate (using dplyr::mutate(), for example) to make things look just

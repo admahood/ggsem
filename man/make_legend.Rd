@@ -9,6 +9,11 @@ make_legend(
   signs = c("positive", "negative", "neutral")
 )
 }
+\arguments{
+\item{scols}{the colors of thes}
+
+\item{signs}{the names associated with the colors}
+}
 \description{
 You can add the legend to a path model plot using ggpubr::ggarrange(), for
 example.
