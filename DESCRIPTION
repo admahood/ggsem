@@ -1,10 +1,10 @@
-Package: gglavaan
-Title: Create nice-looking plots for Structural Equation Models
+Package: ggsem
+Title: Create nice-looking plots for structural equation models
 Version: 0.1.0
 Authors@R: 
     person("Adam", "Mahood", , "admahood@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-3791-9654"))
-Description: Create nice-looking plots for Structural Equation Models using ggplot2 and ggraph.
+Description: Create nice-looking plots for structural equation models using ggplot2 and ggraph.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
