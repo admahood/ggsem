@@ -79,7 +79,7 @@ ggsem <- function(fit,
                   title = class(fit)[1],
                   layout_df = NA,
                   rename_nodes =F,
-                  cols =  c("grey80", "#377EB8", "#E41A1C"),
+                  cols =  c("#377EB8", "#E41A1C", "grey80"),
                   new_node_names = NA,
                   layout = "auto",
                   labels = TRUE,
@@ -179,7 +179,7 @@ ggsem <- function(fit,
 
   # Plot
   p1 <- ggraph::ggraph(layout1) +
-    ggraph::geom_edge_arc(ggplot2::aes(color= factor(sign, levels = c("ns", "-", "+")),
+    ggraph::geom_edge_arc(ggplot2::aes(color= factor(sign, levels = c( "-", "+","ns")),
                       width = abs(val),
                       label = hlab
                       #linetype = as.factor(sign)
