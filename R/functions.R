@@ -191,7 +191,7 @@ ggsem <- function(fit,
     ) +
     ggraph::scale_edge_color_manual(name = "Direction",
                             values = cols)+
-    ggraph::scale_edge_width(guide = "none", range = c(1.5,2)) +
+    ggraph::scale_edge_width(guide = "none", range = c(1.45,2)) +
     ggraph::theme_graph(fg_text_colour = 'white',
                 base_family = 'sans'
     ) +
