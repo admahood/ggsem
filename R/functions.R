@@ -15,6 +15,7 @@
 #' @param alpha threshold for significance. Defaults to 0.05
 #' @param exclude variables to exclude from the plot
 #' @param filename filename to write the figure to
+#' @param labels display standardized coefficients along the arrows?
 #' @export
 #'
 #' @examples
@@ -79,6 +80,7 @@ ggsem <- function(fit,
                   cols =  c("#E41A1C", "#377EB8", "grey80"),
                   new_node_names = NA,
                   layout = "auto",
+                  labels = TRUE,
                   alpha = 0.05,
                   exclude = "none") {
   requireNamespace("tidygraph")
@@ -139,8 +141,12 @@ ggsem <- function(fit,
   }
 
   # Complete Graph Object
+  if(!labels) param_edges <- dplyr::mutate(param_edges, hlab = NA)
+
   param_graph1 <- tidygraph::tbl_graph(param_nodes,
                                        param_edges)
+
+
   # setting up the manual layout
 
   if(layout == "manual"){
@@ -166,22 +172,23 @@ ggsem <- function(fit,
       dplyr::mutate(new_names = new_node_names[x])
   }
 
+
   # Plot
   p1 <- ggraph::ggraph(layout1) +
     ggraph::geom_edge_arc(ggplot2::aes(color=as.factor(sign),
                       width = abs(val),
-                      label= hlab
+                      label = hlab
                       #linetype = as.factor(sign)
     ),
     strength = 0.1,
     angle_calc = "along",
     vjust = -.75,
     check_overlap = FALSE,
-    arrow = ggplot2::arrow(25, length = ggplot2::unit(0.3, "inches"), type = "open"),
+    arrow = ggplot2::arrow(15, length = ggplot2::unit(0.15, "inches"), type = "closed"),
     label_colour = "grey20",
     end_cap = ggraph::circle(0.5, "inches"),
     start_cap = ggraph::circle(0.5, "inches")
-    )+
+    ) +
     ggraph::scale_edge_color_manual(name = "Direction",
                             values = cols)+
     ggraph::scale_edge_width(guide = "none", range = c(.5,2)) +

@@ -13,6 +13,7 @@ ggsem(
   cols = c("#E41A1C", "#377EB8", "grey80"),
   new_node_names = NA,
   layout = "auto",
+  labels = TRUE,
   alpha = 0.05,
   exclude = "none"
 )
@@ -35,6 +36,8 @@ ggsem(
 \item{layout}{select from a variety of layout algorithms. can be "auto",
 "igraph", "manual", "dendrogram", "linear", "matrix", "treemap", "circlepack",
 "partition", or "hive". see ?ggraph::create_layout() for more details.}
+
+\item{labels}{display standardized coefficients along the arrows?}
 
 \item{alpha}{threshold for significance. Defaults to 0.05}
 
