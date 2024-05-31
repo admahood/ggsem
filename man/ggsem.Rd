@@ -10,11 +10,13 @@ ggsem(
   title = class(fit)[1],
   layout_df = NA,
   rename_nodes = F,
-  cols = c("#E41A1C", "#377EB8", "grey80"),
+  cols = c("grey80", "#377EB8", "#E41A1C"),
   new_node_names = NA,
   layout = "auto",
   labels = TRUE,
   alpha = 0.05,
+  show_legend = FALSE,
+  legend_position = "right",
   exclude = "none"
 )
 }
@@ -41,6 +43,10 @@ ggsem(
 
 \item{alpha}{threshold for significance. Defaults to 0.05}
 
+\item{show_legend}{logical. do you want to display a legend?}
+
+\item{legend_position}{character. where do you want the legend to be? defaults to right}
+
 \item{exclude}{variables to exclude from the plot}
 }
 \description{
@@ -52,9 +58,9 @@ the lavaan::sem or piecewiseSEM::psem functions
 
 fake_data <- data.frame(x =stats::runif(100, -10, 10)) |>
    dplyr::mutate(noise1 = rnorm(100),
-         y = 2*x + noise1,
+          y = -2*x + noise1,
           noise2= rnorm(100),
-          z = x + y + noise2)
+          z = x + noise2)
 
 mod <- 'y ~ x
          z ~ x + y'

@@ -16,6 +16,8 @@
 #' @param exclude variables to exclude from the plot
 #' @param filename filename to write the figure to
 #' @param labels display standardized coefficients along the arrows?
+#' @param show_legend logical. do you want to display a legend?
+#' @param legend_position character. where do you want the legend to be? defaults to right
 #' @export
 #'
 #' @examples
@@ -23,9 +25,9 @@
 #'
 #' fake_data <- data.frame(x =stats::runif(100, -10, 10)) |>
 #'    dplyr::mutate(noise1 = rnorm(100),
-#'          y = 2*x + noise1,
+#'           y = -2*x + noise1,
 #'           noise2= rnorm(100),
-#'           z = x + y + noise2)
+#'           z = x + noise2)
 #'
 #' mod <- 'y ~ x
 #'          z ~ x + y'
@@ -77,11 +79,13 @@ ggsem <- function(fit,
                   title = class(fit)[1],
                   layout_df = NA,
                   rename_nodes =F,
-                  cols =  c("#E41A1C", "#377EB8", "grey80"),
+                  cols =  c("grey80", "#377EB8", "#E41A1C"),
                   new_node_names = NA,
                   layout = "auto",
                   labels = TRUE,
                   alpha = 0.05,
+                  show_legend = FALSE,
+                  legend_position = "right",
                   exclude = "none") {
   requireNamespace("tidygraph")
   requireNamespace("cowplot")
@@ -175,7 +179,7 @@ ggsem <- function(fit,
 
   # Plot
   p1 <- ggraph::ggraph(layout1) +
-    ggraph::geom_edge_arc(ggplot2::aes(color=as.factor(sign),
+    ggraph::geom_edge_arc(ggplot2::aes(color= factor(sign, levels = c("ns", "-", "+")),
                       width = abs(val),
                       label = hlab
                       #linetype = as.factor(sign)
@@ -212,6 +216,7 @@ ggsem <- function(fit,
                                                                        # nudge_y = 0.05
                                                     )
                                               }
+  if(show_legend) p1 <- p1 + ggplot2::theme(legend.position = legend_position)
   return(p1)
 }
 
