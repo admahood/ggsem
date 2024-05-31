@@ -10,7 +10,7 @@ ggsem(
   title = class(fit)[1],
   layout_df = NA,
   rename_nodes = F,
-  cols = c("#377EB8", "#E41A1C", "grey80"),
+  cols = c("grey80", "#E41A1C", "#377EB8"),
   new_node_names = NA,
   layout = "auto",
   labels = TRUE,
