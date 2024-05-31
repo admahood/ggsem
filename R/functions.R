@@ -179,7 +179,7 @@ ggsem <- function(fit,
 
   # Plot
   p1 <- ggraph::ggraph(layout1) +
-    ggraph::geom_edge_arc(ggplot2::aes(color= factor(sign, levels = c( "-", "+","ns")),
+    ggraph::geom_edge_arc(ggplot2::aes(color= factor(sign, levels = c("ns", "-", "+")),
                       width = abs(val),
                       label = hlab
                       #linetype = as.factor(sign)
