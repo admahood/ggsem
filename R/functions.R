@@ -79,7 +79,7 @@ ggsem <- function(fit,
                   title = class(fit)[1],
                   layout_df = NA,
                   rename_nodes =F,
-                  cols =  c("grey80", "#E41A1C", "#377EB8"),
+                  cols =  c( "grey80","#E41A1C","#377EB8"),
                   new_node_names = NA,
                   layout = "auto",
                   labels = TRUE,
@@ -95,8 +95,8 @@ ggsem <- function(fit,
   # Extract standardized parameters
   if(as.character(class(fit)) == "lavaan"){
   params <- lavaan::standardizedSolution(fit) |>
-    dplyr::filter(!lhs %in% "exclude",
-                  !rhs %in% "exclude")
+    dplyr::filter(!lhs %in% exclude,
+                  !rhs %in% exclude)
   # Edge properties
 
   param_edges <- params |>
@@ -165,7 +165,7 @@ ggsem <- function(fit,
 
     # applying the manual layout to the graph objects, one for each group
     layout1 <- ggraph::create_layout(param_graph1, layout = layout_man)
-  }else{
+    }else{
     layout1 <- ggraph::create_layout(param_graph1, layout=layout)
   }
 
@@ -250,7 +250,8 @@ random_layout <- function(fit){
 #' example.
 #' @param scols the colors of thes
 #' @param signs the names associated with the colors
-make_legend <- function(scols = c("#377EB8", "#E41A1C", "grey80"),
+#' @export
+make_legend <- function(scols = c( "grey80", "#E41A1C","#377EB8"),
                         signs = c("positive", "negative", "neutral")){
   requireNamespace("cowplot")
   requireNamespace("tibble")

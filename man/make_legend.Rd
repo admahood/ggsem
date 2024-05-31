@@ -5,7 +5,7 @@
 \title{Make a nice-looking legend}
 \usage{
 make_legend(
-  scols = c("#377EB8", "#E41A1C", "grey80"),
+  scols = c("grey80", "#E41A1C", "#377EB8"),
   signs = c("positive", "negative", "neutral")
 )
 }
