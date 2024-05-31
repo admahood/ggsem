@@ -202,13 +202,15 @@ ggsem <- function(fit,
     )
   if(length(title) ==1)p1 <- p1 + ggplot2::ggtitle(title[1]) else p1 <- p1 + ggplot2::ggtitle(title[1], title[2])
   if(rename_nodes){ p1 <- p1 + ggraph::geom_node_text(ggplot2::aes(label = new_node_names_df$new_names),
-                                              fontface = "bold",
-                                              nudge_y = 0.05)}else{
+                                              fontface = "bold"#,
+                                              #nudge_y = 0.05
+                                              )}else{
                                                 p1<- p1+
                                                   ggraph::geom_node_text(
                                                     ggplot2::aes(label = metric),
-                                                    fontface = "bold",#family = 'Times',  size = 10, #node names
-                                                                        nudge_y = 0.05)
+                                                    fontface = "bold"#,#family = 'Times',  size = 10, #node names
+                                                                       # nudge_y = 0.05
+                                                    )
                                               }
   return(p1)
 }
