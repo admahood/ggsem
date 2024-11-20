@@ -129,9 +129,11 @@ ggsem <- function(fit,
   if(as.character(class(fit)) == "psem"){
     sum <- summary(fit)$coefficients
     param_edges <- sum |>
-      dplyr::select(to = Response, from = Predictor, val = Std.Estimate,
+      dplyr::select(to = Response, from = Predictor, val = Estimate,
                     pvalue = P.Value)|>
-      dplyr::mutate(class = val) |>
+      dplyr::filter(val != '-') |>
+      dplyr::mutate(val = as.numeric(val),
+                    class = val) |>
       dplyr::mutate(sign = ifelse(val>0, "+","-")) |>
       dplyr::mutate(sign = replace(sign, val == 0, "ns"))|>
       dplyr::mutate(sign = replace(sign, is.na(val), "ns")) |>
@@ -232,16 +234,30 @@ random_layout <- function(fit){
   requireNamespace("dplyr")
   requireNamespace("lavaan")
   requireNamespace("tibble")
+  requireNamespace('piecewiseSEM')
 
-  prep <- lavaan::standardizedsolution(fit) |>
-    dplyr::filter(lhs == rhs) |>
-    dplyr::transmute(metric = lhs, e = est.std)
 
-  return(prep |>
-    dplyr::mutate(x=stats::runif(nrow(prep), min=-1, max=1),
-                  y=stats::runif(nrow(prep), min=-1, max=1)) |>
-    dplyr::select(-e) |>
-    tibble::as_tibble())
+  if(class(fit)[1] == 'lavaan'){
+    prep <- lavaan::standardizedsolution(fit) |>
+      dplyr::filter(lhs == rhs) |>
+      dplyr::transmute(metric = lhs, e = est.std)
+
+    return(prep |>
+      dplyr::mutate(x=stats::runif(nrow(prep), min=-1, max=1),
+                    y=stats::runif(nrow(prep), min=-1, max=1)) |>
+      dplyr::select(-e) |>
+      tibble::as_tibble())
+  }
+  if(class(fit) == 'psem'){
+    sum <- summary(fit)$coefficients
+    df <- data.frame(metric = unique(
+      c(sum$Response, sum$Predictor)
+    ))
+    df <- dplyr::mutate(df, x = rnorm(n = nrow(df)), y=rnorm(n=nrow(df)))
+    return(df)
+  }
+
+  if(class(fit)[1] != "psem" & class(fit)[1] != 'lavaan') return(print("unrecognized model type"))
 }
 
 #' Make a nice-looking legend
